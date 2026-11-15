@@ -37,10 +37,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 async function getOutageDetails(id: string) {
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+
     const [outageRes, historyRes] = await Promise.all([
-      fetch(`${env.backendApiUrl}/outages/${id}`, { cache: "no-store" }),
-      fetch(`${env.backendApiUrl}/outages/${id}/history`, { cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/outages/${id}`, { signal: controller.signal, cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/outages/${id}/history`, { signal: controller.signal, cache: "no-store" }),
     ]);
+    clearTimeout(timer);
 
     if (!outageRes.ok) return null;
 
@@ -51,8 +55,7 @@ async function getOutageDetails(id: string) {
       outage: outageData.data,
       history: historyData.data || [],
     };
-  } catch (error) {
-    console.error("Failed to fetch outage details:", error);
+  } catch {
     return null;
   }
 }

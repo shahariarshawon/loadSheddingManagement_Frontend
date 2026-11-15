@@ -71,12 +71,18 @@ export async function POST(request: Request) {
 
     const { email, password } = validation.data;
 
-    // Call real backend authentication endpoint
+    // Call real backend authentication endpoint with a 6-second timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
     const backendResponse = await fetch(`${env.backendApiUrl}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      signal: controller.signal,
     }).catch(() => null);
+
+    clearTimeout(timeoutId);
 
     const backendData = backendResponse ? await backendResponse.json().catch(() => null) : null;
 

@@ -21,11 +21,15 @@ export const metadata: Metadata = {
 
 async function getGridData() {
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+
     const [zonesRes, substationsRes, areasRes] = await Promise.all([
-      fetch(`${env.backendApiUrl}/zones?limit=50`, { cache: "no-store" }),
-      fetch(`${env.backendApiUrl}/substations?limit=50`, { cache: "no-store" }),
-      fetch(`${env.backendApiUrl}/areas?limit=50`, { cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/zones?limit=50`, { signal: controller.signal, cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/substations?limit=50`, { signal: controller.signal, cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/areas?limit=50`, { signal: controller.signal, cache: "no-store" }),
     ]);
+    clearTimeout(timer);
 
     const zonesData: ApiResponse<Zone[]> = await zonesRes.json().catch(() => ({ data: [] }));
     const substationsData: ApiResponse<Substation[]> = await substationsRes.json().catch(() => ({ data: [] }));

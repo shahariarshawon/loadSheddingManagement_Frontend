@@ -29,14 +29,19 @@ export const metadata: Metadata = {
 async function getAreaOutages(areaId?: string | null): Promise<Outage[]> {
   if (!areaId) return [];
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+
     const res = await fetch(`${env.backendApiUrl}/outages?areaId=${areaId}&limit=4`, {
+      signal: controller.signal,
       cache: "no-store",
     });
+    clearTimeout(timer);
+
     if (!res.ok) return [];
     const data: ApiResponse<Outage[]> = await res.json();
     return data.data || [];
-  } catch (error) {
-    console.error("Failed to fetch area outages:", error);
+  } catch {
     return [];
   }
 }

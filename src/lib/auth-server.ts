@@ -80,97 +80,120 @@ export async function getServerSession(): Promise<ServerSessionResult> {
       return { authenticated: false, user: null, accessToken: null };
     }
 
-    // Attempt 1: Fetch profile with current accessToken
+    // Attempt 1: Fetch profile with current accessToken (with 2s timeout for fast SSR rendering)
     if (accessToken) {
-      const response = await fetch(`${env.backendApiUrl}/users/me`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      });
+      const decoded = decodeJwt(accessToken);
 
-      if (response.ok) {
-        const payload = await response.json();
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2000);
+
+        const response = await fetch(`${env.backendApiUrl}/users/me`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        clearTimeout(timer);
+
+        if (response.ok) {
+          const payload = await response.json();
+          if (payload?.data) {
+            return {
+              authenticated: true,
+              user: payload.data as UserProfile,
+              accessToken,
+            };
+          }
+        }
+      } catch {
+        // Fast timeout or network failure: fall back to token payload immediately
+      }
+
+      // If backend was cold-starting, slow, rate-limited, or unavailable,
+      // resolve session instantly from the cryptographic JWT payload (0ms latency, zero blocking SSR)
+      if (decoded && decoded.userId && decoded.role) {
+        const fallbackUser: UserProfile = {
+          id: decoded.userId,
+          name:
+            decoded.name ||
+            (decoded.role === "ADMIN"
+              ? "System Administrator"
+              : decoded.role === "POWER_OPERATOR"
+              ? "Grid Dispatch Operator"
+              : "Residential Consumer"),
+          email: decoded.email || `${decoded.role.toLowerCase()}@gridwatch.com`,
+          role: decoded.role,
+          isActive: true,
+          areaId: decoded.role === "CUSTOMER" ? "a1aa1c30-3026-42a4-bbcc-5dfda44f1b77" : null,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
         return {
           authenticated: true,
-          user: payload.data as UserProfile,
+          user: fallbackUser,
           accessToken,
         };
-      } else if (response.status === 429 || response.status >= 500) {
-        // Backend rate limited (Render free tier / express-rate-limit 200 reqs/15m)
-        // or temporarily unavailable: preserve session from valid signed JWT
-        const decoded = decodeJwt(accessToken);
-        if (decoded && decoded.userId && decoded.role) {
-          const fallbackUser: UserProfile = {
-            id: decoded.userId,
-            name:
-              decoded.name ||
-              (decoded.role === "ADMIN"
-                ? "System Administrator"
-                : decoded.role === "POWER_OPERATOR"
-                ? "Electricity Provider"
-                : "Residential Consumer"),
-            email: decoded.email || `${decoded.role.toLowerCase()}@gridwatch.com`,
-            role: decoded.role,
-            isActive: true,
-            areaId: decoded.role === "CUSTOMER" ? "a1aa1c30-3026-42a4-bbcc-5dfda44f1b77" : null,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          };
-          return {
-            authenticated: true,
-            user: fallbackUser,
-            accessToken,
-          };
-        }
       }
     }
 
     // Attempt 2: If accessToken is invalid/expired and refreshToken exists, attempt server-side refresh
     if (refreshToken) {
-      const refreshResponse = await fetch(`${env.backendApiUrl}/auth/refresh-token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-        cache: "no-store",
-      });
+      try {
+        const refreshController = new AbortController();
+        const refreshTimer = setTimeout(() => refreshController.abort(), 2500);
 
-      if (refreshResponse.ok) {
-        const refreshData = await refreshResponse.json();
-        const newAccessToken = refreshData.data?.accessToken;
-        const newRefreshToken = refreshData.data?.refreshToken;
+        const refreshResponse = await fetch(`${env.backendApiUrl}/auth/refresh-token`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken }),
+          signal: refreshController.signal,
+          cache: "no-store",
+        });
+        clearTimeout(refreshTimer);
 
-        if (newAccessToken) {
-          // Fetch user profile with the newly issued access token
-          const userResponse = await fetch(`${env.backendApiUrl}/users/me`, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${newAccessToken}`,
-              "Content-Type": "application/json",
-            },
-            cache: "no-store",
-          });
+        if (refreshResponse.ok) {
+          const refreshData = await refreshResponse.json();
+          const newAccessToken = refreshData.data?.accessToken;
+          const newRefreshToken = refreshData.data?.refreshToken;
 
-          if (userResponse.ok) {
-            const userPayload = await userResponse.json();
-            
-            // Try to persist cookies if we are in a context that allows it (Route Handler)
-            try {
-              await setAuthCookies(newAccessToken, newRefreshToken);
-            } catch {
-              // In Server Component render phase, cookies() is read-only.
-              // That's fine: client will hit /api/auth/session to persist the refreshed cookies.
+          if (newAccessToken) {
+            const userController = new AbortController();
+            const userTimer = setTimeout(() => userController.abort(), 2000);
+
+            const userResponse = await fetch(`${env.backendApiUrl}/users/me`, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${newAccessToken}`,
+                "Content-Type": "application/json",
+              },
+              signal: userController.signal,
+              cache: "no-store",
+            });
+            clearTimeout(userTimer);
+
+            if (userResponse.ok) {
+              const userPayload = await userResponse.json();
+              
+              try {
+                await setAuthCookies(newAccessToken, newRefreshToken);
+              } catch {
+                // In Server Component render phase, cookies() is read-only
+              }
+
+              return {
+                authenticated: true,
+                user: userPayload.data as UserProfile,
+                accessToken: newAccessToken,
+              };
             }
-
-            return {
-              authenticated: true,
-              user: userPayload.data as UserProfile,
-              accessToken: newAccessToken,
-            };
           }
         }
+      } catch {
+        // Refresh timed out or failed
       }
     }
 

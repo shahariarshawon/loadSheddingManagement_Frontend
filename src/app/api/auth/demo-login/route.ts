@@ -96,12 +96,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // Authenticate with real backend login endpoint
+    // Authenticate with real backend login endpoint with a 2.5-second timeout
+    // If Render backend is sleeping or cold-starting, abort quickly and issue resilient demo session
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
     const backendResponse = await fetch(`${env.backendApiUrl}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      signal: controller.signal,
     }).catch(() => null);
+
+    clearTimeout(timeoutId);
 
     const backendData = backendResponse ? await backendResponse.json().catch(() => null) : null;
 

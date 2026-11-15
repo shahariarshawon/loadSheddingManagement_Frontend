@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,11 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const { login, isLoggingIn } = useAuth();
+
+  // Pre-warm backend container on mount to avoid cold start latency
+  useEffect(() => {
+    fetch("/api/backend/health").catch(() => {});
+  }, []);
 
   const {
     register,

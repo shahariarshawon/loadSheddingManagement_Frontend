@@ -23,7 +23,7 @@ export function useAuth() {
     queryKey: AUTH_QUERY_KEY,
     queryFn: authService.getSession,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   const user: UserProfile | null = sessionData?.user || null;

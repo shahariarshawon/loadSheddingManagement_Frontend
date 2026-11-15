@@ -32,11 +32,15 @@ async function getOperatorMetrics(accessToken?: string) {
       "Content-Type": "application/json",
     };
 
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+
     const [outagesRes, reportsRes, techsRes] = await Promise.all([
-      fetch(`${env.backendApiUrl}/outages?limit=50`, { headers, cache: "no-store" }),
-      fetch(`${env.backendApiUrl}/outage-reports?limit=50`, { headers, cache: "no-store" }),
-      fetch(`${env.backendApiUrl}/technicians?limit=50`, { headers, cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/outages?limit=50`, { headers, signal: controller.signal, cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/outage-reports?limit=50`, { headers, signal: controller.signal, cache: "no-store" }),
+      fetch(`${env.backendApiUrl}/technicians?limit=50`, { headers, signal: controller.signal, cache: "no-store" }),
     ]);
+    clearTimeout(timer);
 
     const outagesData: ApiResponse<Outage[]> = await outagesRes.json().catch(() => ({ data: [] }));
     const reportsData: ApiResponse<OutageReport[]> = await reportsRes.json().catch(() => ({ data: [] }));
@@ -47,8 +51,7 @@ async function getOperatorMetrics(accessToken?: string) {
       reports: reportsData.data || [],
       technicians: techsData.data || [],
     };
-  } catch (error) {
-    console.error("Failed to load operator metrics:", error);
+  } catch {
     return { outages: [], reports: [], technicians: [] };
   }
 }
