@@ -22,7 +22,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
               <ShieldCheck className="h-4 w-4 text-emerald-500" />
-              <span>Verified Neon Cloud Database Connection</span>
+              <span>Verified Enterprise Grid Architecture</span>
             </div>
           </div>
 

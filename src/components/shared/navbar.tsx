@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { UserMenuPlaceholder } from "@/components/layouts/user-menu-placeholder";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { APP_CONFIG, ROUTES } from "@/lib/constants";
 import { useUiStore } from "@/stores/ui-store";
@@ -81,6 +82,8 @@ export function Navbar() {
             <span>Grid Online</span>
           </div>
 
+          <ThemeToggle />
+
           <div className="h-4 w-[1px] bg-border" />
 
           {isAuthenticated ? (
@@ -115,6 +118,7 @@ export function Navbar() {
 
         {/* Mobile Menu Trigger */}
         <div className="flex md:hidden items-center gap-2">
+          <ThemeToggle />
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger
               className={cn(
@@ -138,7 +142,7 @@ export function Navbar() {
 
                 <div className="flex items-center gap-2 my-4 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                   <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-500" />
-                  <span>Neon Grid Telemetry Active</span>
+                  <span>Grid Telemetry Active</span>
                 </div>
 
                 <nav className="flex flex-col gap-1.5 mt-2">
