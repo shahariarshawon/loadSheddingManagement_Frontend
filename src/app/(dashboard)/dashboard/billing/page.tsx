@@ -63,8 +63,15 @@ export default function CustomerBillingPage() {
   const checkoutMutation = useMutation({
     mutationFn: async (plan: "MONTHLY_PRIORITY" | "ANNUAL_PRIORITY") => {
       setInitiatingPlan(plan);
+      const origin =
+        typeof window !== "undefined"
+          ? window.location.origin
+          : "https://gridwatch-sigma.vercel.app";
       return apiClient.post<CheckoutResponse>("/payments/checkout", {
         plan,
+        clientUrl: origin,
+        successUrl: `${origin}/payments/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${origin}/payments/cancel`,
       });
     },
     onSuccess: (res) => {

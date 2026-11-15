@@ -29,6 +29,15 @@ async function handleProxy(request: Request, { params }: RouteParams) {
       "Content-Type": "application/json",
     };
 
+    const originHeader = request.headers.get("origin") || url.origin;
+    if (originHeader) {
+      headers["Origin"] = originHeader;
+    }
+    const refererHeader = request.headers.get("referer");
+    if (refererHeader) {
+      headers["Referer"] = refererHeader;
+    }
+
     if (accessToken) {
       headers["Authorization"] = `Bearer ${accessToken}`;
     }
