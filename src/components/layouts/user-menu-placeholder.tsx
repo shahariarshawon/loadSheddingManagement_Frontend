@@ -74,16 +74,16 @@ export function UserMenuPlaceholder({
           </Button>
         }
       />
-      <DropdownMenuContent className="w-60" align="end">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
+      <DropdownMenuContent className="w-64" align="end">
+        <DropdownMenuLabel className="font-normal p-3">
+          <div className="flex flex-col space-y-1.5">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold leading-none truncate max-w-[140px]">
+              <p className="text-sm font-bold leading-none truncate max-w-[150px]">
                 {name}
               </p>
               <Badge
                 variant="outline"
-                className="text-[10px] uppercase font-mono px-1 py-0 h-4"
+                className="text-xs uppercase font-mono px-2 py-0.5"
               >
                 {roleLabel}
               </Badge>
@@ -95,25 +95,25 @@ export function UserMenuPlaceholder({
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer text-xs">
-            <User className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="cursor-pointer text-sm py-2">
+            <User className="mr-2 h-4.5 w-4.5" />
             <span>Profile & Area Info</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer text-xs">
-            <ShieldCheck className="mr-2 h-4 w-4" />
+          <DropdownMenuItem className="cursor-pointer text-sm py-2">
+            <ShieldCheck className="mr-2 h-4.5 w-4.5" />
             <span>Security & Sessions</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="cursor-pointer text-xs text-destructive focus:text-destructive font-medium"
+          className="cursor-pointer text-sm py-2 text-destructive focus:text-destructive font-medium"
           disabled={isLoggingOut}
           onClick={handleLogout}
         >
           {isLoggingOut ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-4.5 w-4.5 animate-spin" />
           ) : (
-            <LogOut className="mr-2 h-4 w-4" />
+            <LogOut className="mr-2 h-4.5 w-4.5" />
           )}
           <span>{isLoggingOut ? "Ending Session..." : "Log Out"}</span>
         </DropdownMenuItem>

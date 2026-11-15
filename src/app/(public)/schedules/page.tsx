@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { env } from "@/lib/env";
+import { formatDateTime } from "@/lib/utils";
 import type { Outage, Area, ApiResponse } from "@/types";
 
 function SchedulesContent() {
@@ -313,18 +314,13 @@ function SchedulesContent() {
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
                         <span>Start Window:</span>
                       </span>
-                      <span className="font-mono text-foreground">
-                        {new Date(outage.startTime).toLocaleString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      <span className="font-mono font-medium text-foreground">
+                        {formatDateTime(outage.startTime)}
                       </span>
                     </div>
 

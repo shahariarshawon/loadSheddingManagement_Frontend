@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
+import { formatDate } from "@/lib/utils";
 import type { UserProfile, UserRole, ApiResponse } from "@/types";
 
 function UsersManagementContent() {
@@ -320,8 +321,8 @@ function UsersManagementContent() {
                         )}
                       </td>
 
-                      <td className="px-4 py-3 text-muted-foreground font-mono text-[11px]">
-                        {new Date(u.createdAt).toLocaleDateString()}
+                      <td className="px-5 py-4 text-muted-foreground font-medium text-sm">
+                        {formatDate(u.createdAt)}
                       </td>
 
                       <td className="px-4 py-3 text-right">

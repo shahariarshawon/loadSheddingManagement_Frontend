@@ -339,8 +339,8 @@ function TechniciansRosterContent() {
                     </a>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 shrink-0 text-foreground/70" />
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="h-4 w-4 shrink-0 text-foreground/70" />
                     <span>
                       Member since {new Date(tech.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })}
                     </span>
@@ -352,9 +352,9 @@ function TechniciansRosterContent() {
               <div className="pt-4 mt-4 border-t flex items-center justify-between gap-2">
                 <a
                   href={`tel:${tech.phone}`}
-                  className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium hover:bg-muted transition-colors"
+                  className="inline-flex items-center justify-center rounded-md border border-input bg-background px-3.5 py-2 text-sm font-semibold hover:bg-muted transition-colors"
                 >
-                  <Phone className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                  <Phone className="mr-2 h-4 w-4 text-primary" />
                   Call Direct
                 </a>
 

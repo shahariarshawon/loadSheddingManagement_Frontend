@@ -42,12 +42,12 @@ export function DashboardHeader({
         </Button>
 
         {/* Breadcrumbs Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center space-x-1.5 text-xs text-muted-foreground overflow-hidden">
+        <nav aria-label="Breadcrumb" className="flex items-center space-x-2 text-sm text-muted-foreground overflow-hidden">
           {breadcrumbs.map((crumb, idx) => {
             const isLast = idx === breadcrumbs.length - 1;
             return (
-              <div key={crumb.label} className="flex items-center gap-1.5 truncate">
-                {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" />}
+              <div key={crumb.label} className="flex items-center gap-2 truncate">
+                {idx > 0 && <ChevronRight className="h-4 w-4 text-muted-foreground/60 shrink-0" />}
                 {crumb.href && !isLast ? (
                   <Link
                     href={crumb.href}
@@ -56,7 +56,7 @@ export function DashboardHeader({
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className={`truncate ${isLast ? "font-semibold text-foreground" : "font-medium"}`}>
+                  <span className={`truncate ${isLast ? "font-bold text-foreground" : "font-medium"}`}>
                     {crumb.label}
                   </span>
                 )}
@@ -67,10 +67,10 @@ export function DashboardHeader({
       </div>
 
       {/* Header Actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3.5">
         {/* Live Grid Status Badge */}
-        <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-          <Radio className="h-3 w-3 animate-pulse text-emerald-500" />
+        <div className="hidden sm:flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+          <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-500" />
           <span>Telemetry Active</span>
         </div>
 

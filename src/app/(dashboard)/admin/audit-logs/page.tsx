@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/utils";
 import type { AuditLog, ApiResponse } from "@/types";
 
 function AuditLogsContent() {
@@ -219,15 +220,10 @@ function AuditLogsContent() {
                 {auditLogs.map((log) => (
                   <tr key={log.id} className="hover:bg-muted/30 transition-colors">
                     {/* Timestamp */}
-                    <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5 text-foreground/60" />
-                        <span>
-                          {new Date(log.createdAt).toLocaleString("en-US", {
-                            dateStyle: "short",
-                            timeStyle: "medium",
-                          })}
-                        </span>
+                    <td className="px-5 py-4 text-sm text-muted-foreground whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-foreground/60" />
+                        <span>{formatDateTime(log.createdAt)}</span>
                       </div>
                     </td>
 

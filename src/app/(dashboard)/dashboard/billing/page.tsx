@@ -26,6 +26,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
 import { useAuth } from "@/features/auth/hooks/use-auth";
+import { formatDateTime, formatDate } from "@/lib/utils";
 import type { Payment, CheckoutResponse, ApiResponse } from "@/types";
 
 export default function CustomerBillingPage() {
@@ -125,17 +126,17 @@ export default function CustomerBillingPage() {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col gap-2 border-b pb-4">
-        <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+      <div className="flex flex-col gap-2.5 border-b pb-5">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <CreditCard className="h-5 w-5" />
           </span>
-          <h1 className="text-2xl font-bold tracking-tight">Billing & Priority Passes</h1>
-          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+          <h1 className="text-3xl font-extrabold tracking-tight">Billing & Priority Passes</h1>
+          <Badge variant="outline" className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold px-2.5 py-0.5">
             Stripe Test Sandbox Active
           </Badge>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Upgrade to verified priority status, instant SMS/push restoration alerts, and real-time outage telemetry for{" "}
           <strong className="text-foreground">{user?.name}</strong>.
         </p>
@@ -143,22 +144,22 @@ export default function CustomerBillingPage() {
 
       {/* Active Subscription Banner (if present) */}
       {activeSubscription && (
-        <Card className="p-5 border-emerald-500/40 bg-emerald-500/5 shadow-sm space-y-3">
+        <Card className="p-6 border-emerald-500/40 bg-emerald-500/5 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 text-white">
                 <CheckCircle2 className="h-5 w-5" />
               </span>
               <div>
-                <h3 className="font-semibold text-foreground text-sm">
+                <h3 className="font-bold text-foreground text-base">
                   Active Priority Pass: {activeSubscription.plan === "ANNUAL_PRIORITY" ? "365-Day Annual Pass" : "30-Day Monthly Pass"}
                 </h3>
-                <p className="text-xs text-muted-foreground">
-                  Valid until {new Date(activeSubscription.endDate).toLocaleDateString("en-US", { dateStyle: "long" })}
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Valid until {formatDate(activeSubscription.endDate)}
                 </p>
               </div>
             </div>
-            <Badge className="bg-emerald-600 text-white">Active Status</Badge>
+            <Badge className="bg-emerald-600 text-white text-xs font-semibold px-3 py-1">Active Status</Badge>
           </div>
         </Card>
       )}
@@ -166,8 +167,8 @@ export default function CustomerBillingPage() {
       {/* Pricing / Plan Selection Cards */}
       <div className="space-y-4">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Select a Priority Plan</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">Select a Priority Plan</h2>
+          <p className="text-sm text-muted-foreground mt-1">
             Prices are billed securely through Stripe in Test Mode. You can use standard test card credentials.
           </p>
         </div>
@@ -175,59 +176,59 @@ export default function CustomerBillingPage() {
         <div className="grid gap-6 md:grid-cols-2">
           {/* Monthly Priority Pass */}
           <Card
-            className={`p-6 flex flex-col justify-between transition-all hover:shadow-md cursor-pointer ${
+            className={`p-6 sm:p-7 flex flex-col justify-between transition-all hover:shadow-md cursor-pointer ${
               selectedPlan === "MONTHLY_PRIORITY"
-                ? "border-primary ring-1 ring-primary shadow-sm"
+                ? "border-primary ring-2 ring-primary shadow-sm"
                 : "border-border"
             }`}
             onClick={() => setSelectedPlan("MONTHLY_PRIORITY")}
           >
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-lg text-foreground">30-Day Priority Pass</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">Monthly Sector Reliability Access</p>
+                  <h3 className="font-bold text-xl text-foreground">30-Day Priority Pass</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5">Monthly Sector Reliability Access</p>
                 </div>
-                <Badge variant="outline" className="border-primary/30 text-primary">
+                <Badge variant="outline" className="border-primary/40 text-primary text-xs font-semibold px-2.5 py-0.5">
                   Popular
                 </Badge>
               </div>
 
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-extrabold text-foreground">$10.00</span>
-                <span className="text-xs text-muted-foreground font-medium">USD / 30 Days</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-extrabold text-foreground">$10.00</span>
+                <span className="text-sm text-muted-foreground font-semibold">USD / 30 Days</span>
               </div>
 
-              <div className="space-y-2 border-t pt-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+              <div className="space-y-3 border-t pt-5 text-sm text-muted-foreground">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>30-Day access to sector reliability score & forecasts</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Priority triage queueing for customer outage reports</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Instant in-app notifications on schedule adjustments</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 mt-4 border-t">
+            <div className="pt-6 mt-6 border-t">
               <Button
-                className="w-full"
+                className="w-full h-11 text-sm font-semibold"
                 onClick={() => handleCheckout("MONTHLY_PRIORITY")}
                 disabled={checkoutMutation.isPending && initiatingPlan === "MONTHLY_PRIORITY"}
               >
                 {checkoutMutation.isPending && initiatingPlan === "MONTHLY_PRIORITY" ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4.5 w-4.5 animate-spin" />
                     Connecting to Stripe...
                   </>
                 ) : (
                   <>
-                    <Lock className="mr-2 h-4 w-4" />
+                    <Lock className="mr-2 h-4.5 w-4.5" />
                     Proceed with Stripe Checkout ($10.00)
                   </>
                 )}
@@ -237,68 +238,68 @@ export default function CustomerBillingPage() {
 
           {/* Annual Priority Pass */}
           <Card
-            className={`p-6 flex flex-col justify-between transition-all hover:shadow-md cursor-pointer relative overflow-hidden ${
+            className={`p-6 sm:p-7 flex flex-col justify-between transition-all hover:shadow-md cursor-pointer relative overflow-hidden ${
               selectedPlan === "ANNUAL_PRIORITY"
-                ? "border-primary ring-1 ring-primary shadow-sm"
+                ? "border-primary ring-2 ring-primary shadow-sm"
                 : "border-border"
             }`}
             onClick={() => setSelectedPlan("ANNUAL_PRIORITY")}
           >
-            <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-0.5 rounded-bl">
+            <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3.5 py-1 rounded-bl-md">
               Save 17%
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-bold text-lg text-foreground">365-Day Annual Pass</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">Comprehensive Year-Round Protection</p>
+                  <h3 className="font-bold text-xl text-foreground">365-Day Annual Pass</h3>
+                  <p className="text-sm text-muted-foreground mt-0.5">Comprehensive Year-Round Protection</p>
                 </div>
-                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold px-2.5 py-0.5">
                   Best Value
                 </Badge>
               </div>
 
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-extrabold text-foreground">$99.00</span>
-                <span className="text-xs text-muted-foreground font-medium">USD / Year</span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-extrabold text-foreground">$99.00</span>
+                <span className="text-sm text-muted-foreground font-semibold">USD / Year</span>
               </div>
 
-              <div className="space-y-2 border-t pt-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+              <div className="space-y-3 border-t pt-5 text-sm text-muted-foreground">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>365-Day unrestricted historical downtime & telemetry metrics</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Immediate field crew dispatch prioritization</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Automated emergency restoration alerts</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>Priority developer API access for smart home automation</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-6 mt-4 border-t">
+            <div className="pt-6 mt-6 border-t">
               <Button
                 variant={selectedPlan === "ANNUAL_PRIORITY" ? "default" : "outline"}
-                className="w-full"
+                className="w-full h-11 text-sm font-semibold"
                 onClick={() => handleCheckout("ANNUAL_PRIORITY")}
                 disabled={checkoutMutation.isPending && initiatingPlan === "ANNUAL_PRIORITY"}
               >
                 {checkoutMutation.isPending && initiatingPlan === "ANNUAL_PRIORITY" ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 h-4.5 w-4.5 animate-spin" />
                     Connecting to Stripe...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="mr-2 h-4 w-4 text-amber-400" />
+                    <Sparkles className="mr-2 h-4.5 w-4.5 text-amber-400" />
                     Get 365-Day Annual Pass ($99.00)
                   </>
                 )}
@@ -309,77 +310,77 @@ export default function CustomerBillingPage() {
       </div>
 
       {/* Stripe Sandbox Test Instructions Card */}
-      <Card className="p-4 bg-muted/40 border text-xs text-muted-foreground space-y-1.5 shadow-sm">
-        <div className="flex items-center gap-2 text-foreground font-semibold">
-          <HelpCircle className="h-4 w-4 text-primary" />
+      <Card className="p-5 bg-muted/40 border text-sm text-muted-foreground space-y-2 shadow-sm">
+        <div className="flex items-center gap-2 text-foreground font-bold text-sm">
+          <HelpCircle className="h-4.5 w-4.5 text-primary" />
           Stripe Test Mode Simulator Instructions:
         </div>
         <p className="leading-relaxed">
           On the Stripe checkout screen, you can complete a test payment using the standard Stripe test card:{" "}
-          <strong className="font-mono text-foreground">4242 • 4242 • 4242 • 4242</strong> with any future date and CVC{" "}
-          <strong className="font-mono text-foreground">123</strong>. No real payment card is charged.
+          <strong className="font-mono text-foreground font-semibold">4242 • 4242 • 4242 • 4242</strong> with any future date and CVC{" "}
+          <strong className="font-mono text-foreground font-semibold">123</strong>. No real payment card is charged.
         </p>
       </Card>
 
       {/* Payment Transaction History Table */}
-      <div className="space-y-3">
+      <div className="space-y-3.5">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">Payment & Transaction History</h2>
-            <p className="text-xs text-muted-foreground">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Payment & Transaction History</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
               Directly synchronized from the backend payment ledger in PostgreSQL.
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => refetchPayments()} className="text-xs">
+          <Button variant="ghost" size="sm" onClick={() => refetchPayments()} className="text-sm font-medium">
             Refresh History
           </Button>
         </div>
 
         <Card className="overflow-hidden shadow-sm">
           {loadingPayments ? (
-            <div className="p-6 space-y-3">
+            <div className="p-6 space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between border-b pb-2">
-                  <div className="space-y-1">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-3 w-48" />
+                <div key={i} className="flex items-center justify-between border-b pb-3">
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-4.5 w-36" />
+                    <Skeleton className="h-3.5 w-48" />
                   </div>
-                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-7 w-24 rounded-full" />
                 </div>
               ))}
             </div>
           ) : paymentsError ? (
-            <div className="p-8 text-center text-destructive space-y-2">
-              <AlertCircle className="mx-auto h-7 w-7" />
-              <p className="text-sm font-semibold">Unable to load transaction history</p>
+            <div className="p-10 text-center text-destructive space-y-3">
+              <AlertCircle className="mx-auto h-8 w-8" />
+              <p className="text-base font-semibold">Unable to load transaction history</p>
               <Button variant="outline" size="sm" onClick={() => refetchPayments()}>
                 Retry
               </Button>
             </div>
           ) : payments.length === 0 ? (
-            <div className="p-10 text-center space-y-2">
-              <CreditCard className="mx-auto h-8 w-8 text-muted-foreground/60" />
-              <p className="text-sm font-medium text-foreground">No payment transactions yet</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="p-12 text-center space-y-2.5">
+              <CreditCard className="mx-auto h-10 w-10 text-muted-foreground/60" />
+              <p className="text-base font-semibold text-foreground">No payment transactions yet</p>
+              <p className="text-sm text-muted-foreground">
                 Your future Priority Pass purchases will appear in this ledger.
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-muted/50 border-b font-semibold uppercase text-muted-foreground">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-muted/60 border-b font-bold uppercase tracking-wider text-muted-foreground text-xs">
                   <tr>
-                    <th className="px-4 py-3">Timestamp</th>
-                    <th className="px-4 py-3">Plan / Product</th>
-                    <th className="px-4 py-3">Amount</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Stripe Session Reference</th>
+                    <th className="px-5 py-3.5">Timestamp</th>
+                    <th className="px-5 py-3.5">Plan / Product</th>
+                    <th className="px-5 py-3.5">Amount</th>
+                    <th className="px-5 py-3.5">Status</th>
+                    <th className="px-5 py-3.5">Stripe Session Reference</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {payments.map((p) => {
                     const planName =
-                      p.metadata && typeof p.metadata === "object" && "planName" in p.metadata
+                       p.metadata && typeof p.metadata === "object" && "planName" in p.metadata
                         ? String(p.metadata.planName)
                         : p.subscription?.plan === "ANNUAL_PRIORITY"
                         ? "365-Day Annual Pass"
@@ -387,18 +388,15 @@ export default function CustomerBillingPage() {
 
                     return (
                       <tr key={p.id} className="hover:bg-muted/30 transition-colors">
-                        <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                          {new Date(p.createdAt).toLocaleDateString("en-US", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })}
+                        <td className="px-5 py-4 text-muted-foreground whitespace-nowrap font-medium text-sm">
+                          {formatDateTime(p.createdAt)}
                         </td>
-                        <td className="px-4 py-3 font-medium text-foreground">{planName}</td>
-                        <td className="px-4 py-3 font-semibold text-foreground">
+                        <td className="px-5 py-4 font-semibold text-foreground text-sm">{planName}</td>
+                        <td className="px-5 py-4 font-bold text-foreground text-base">
                           ${Number(p.amount).toFixed(2)} {p.currency}
                         </td>
-                        <td className="px-4 py-3">{getStatusBadge(p.status)}</td>
-                        <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground max-w-[200px] truncate">
+                        <td className="px-5 py-4">{getStatusBadge(p.status)}</td>
+                        <td className="px-5 py-4 font-mono text-xs text-muted-foreground max-w-[220px] truncate">
                           {p.stripeSessionId}
                         </td>
                       </tr>
@@ -411,10 +409,10 @@ export default function CustomerBillingPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t px-4 py-3">
-              <p className="text-xs text-muted-foreground">
-                Page <span className="font-medium text-foreground">{page}</span> of{" "}
-                <span className="font-medium text-foreground">{totalPages}</span>
+            <div className="flex items-center justify-between border-t px-5 py-4">
+              <p className="text-sm text-muted-foreground">
+                Page <span className="font-semibold text-foreground">{page}</span> of{" "}
+                <span className="font-semibold text-foreground">{totalPages}</span>
               </p>
               <div className="flex items-center gap-2">
                 <Button
@@ -422,6 +420,7 @@ export default function CustomerBillingPage() {
                   size="sm"
                   disabled={page <= 1}
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                  className="text-sm"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Previous
@@ -431,6 +430,7 @@ export default function CustomerBillingPage() {
                   size="sm"
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
+                  className="text-sm"
                 >
                   Next
                   <ChevronRight className="h-4 w-4 ml-1" />

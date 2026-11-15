@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/utils";
 import type { Payment, ApiResponse } from "@/types";
 
 function AdminPaymentsContent() {
@@ -252,15 +253,10 @@ function AdminPaymentsContent() {
                   return (
                     <tr key={p.id} className="hover:bg-muted/30 transition-colors">
                       {/* Timestamp */}
-                      <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="h-3.5 w-3.5 text-foreground/60" />
-                          <span>
-                            {new Date(p.createdAt).toLocaleString("en-US", {
-                              dateStyle: "short",
-                              timeStyle: "short",
-                            })}
-                          </span>
+                      <td className="px-5 py-4 text-sm text-muted-foreground whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-foreground/60" />
+                          <span>{formatDateTime(p.createdAt)}</span>
                         </div>
                       </td>
 
@@ -398,7 +394,7 @@ function AdminPaymentsContent() {
                 )}
                 {selectedPayment.paidAt && (
                   <p className="text-muted-foreground">
-                    Settled at: {new Date(selectedPayment.paidAt).toLocaleString()}
+                    Settled at: {formatDateTime(selectedPayment.paidAt)}
                   </p>
                 )}
               </div>

@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { env } from "@/lib/env";
 import { ROUTES } from "@/lib/constants";
+import { formatDateTime } from "@/lib/utils";
 import type { Outage, ApiResponse } from "@/types";
 
 type PageProps = {
@@ -143,24 +144,24 @@ export default async function OutageDetailPage({ params }: PageProps) {
               <CardTitle className="text-sm font-semibold">Schedule Time Window</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3 pt-0 text-xs">
-            <div className="p-3 rounded-lg bg-muted/40 border border-border/60 flex items-center justify-between">
-              <span className="text-muted-foreground">Start Time:</span>
-              <span className="font-mono font-medium text-foreground">
-                {new Date(outage.startTime).toLocaleString()}
+          <CardContent className="space-y-3.5 pt-0 text-sm">
+            <div className="p-3.5 rounded-lg bg-muted/40 border border-border/60 flex items-center justify-between">
+              <span className="text-muted-foreground font-medium">Start Time:</span>
+              <span className="font-mono font-semibold text-foreground">
+                {formatDateTime(outage.startTime)}
               </span>
             </div>
 
-            <div className="p-3 rounded-lg bg-muted/40 border border-border/60 flex items-center justify-between">
-              <span className="text-muted-foreground">Target / Actual End:</span>
-              <span className="font-mono font-medium text-foreground">
-                {outage.endTime ? new Date(outage.endTime).toLocaleString() : "Until Restoration"}
+            <div className="p-3.5 rounded-lg bg-muted/40 border border-border/60 flex items-center justify-between">
+              <span className="text-muted-foreground font-medium">Target / Actual End:</span>
+              <span className="font-mono font-semibold text-foreground">
+                {outage.endTime ? formatDateTime(outage.endTime) : "Until Restoration"}
               </span>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1">
               <span>Created By Dispatcher:</span>
-              <span className="font-medium text-foreground">
+              <span className="font-semibold text-foreground">
                 {outage.createdBy?.name || "Power Operator"}
               </span>
             </div>
@@ -217,21 +218,21 @@ export default async function OutageDetailPage({ params }: PageProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="space-y-3 border-l-2 border-primary/30 pl-4 py-1 text-xs">
+          <div className="space-y-4 border-l-2 border-primary/30 pl-4 py-1 text-sm">
             <div className="relative">
-              <div className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-primary" />
-              <div className="font-semibold text-foreground">Outage Created & Recorded</div>
-              <div className="text-[11px] text-muted-foreground">
-                {new Date(outage.createdAt).toLocaleString()} by {outage.createdBy?.name || "Operator"}
+              <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 rounded-full bg-primary" />
+              <div className="font-bold text-foreground">Outage Created & Recorded</div>
+              <div className="text-xs text-muted-foreground mt-0.5">
+                {formatDateTime(outage.createdAt)} by {outage.createdBy?.name || "Operator"}
               </div>
             </div>
 
             {isRestored && (
               <div className="relative pt-2">
-                <div className="absolute -left-[21px] top-3 h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                <div className="font-semibold text-emerald-600 dark:text-emerald-400">Power Restored & Verified</div>
-                <div className="text-[11px] text-muted-foreground">
-                  {outage.endTime ? new Date(outage.endTime).toLocaleString() : "Restoration Complete"}
+                <div className="absolute -left-[21px] top-3.5 h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                <div className="font-bold text-emerald-600 dark:text-emerald-400">Power Restored & Verified</div>
+                <div className="text-xs text-muted-foreground mt-0.5">
+                  {outage.endTime ? formatDateTime(outage.endTime) : "Restoration Complete"}
                 </div>
               </div>
             )}

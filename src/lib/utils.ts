@@ -26,6 +26,20 @@ export function formatDateTime(isoString?: string | Date | null): string {
 }
 
 /**
+ * Format ISO datetime string into human readable date-only display string (e.g., Nov 15, 2026).
+ */
+export function formatDate(isoString?: string | Date | null): string {
+  if (!isoString) return "N/A";
+  const date = typeof isoString === "string" ? new Date(isoString) : isoString;
+  if (isNaN(date.getTime())) return "N/A";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+}
+
+/**
  * Format minutes into hours and minutes representation.
  */
 export function formatDurationMinutes(minutes?: number | null): string {

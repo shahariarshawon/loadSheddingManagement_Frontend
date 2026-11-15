@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/utils";
 import type { OutageReport, ApiResponse } from "@/types";
 
 function MyReportsContent() {
@@ -292,15 +293,15 @@ function MyReportsContent() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap items-center justify-between text-[11px] text-muted-foreground pt-1">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-primary" />
+                <div className="flex flex-wrap items-center justify-between text-sm text-muted-foreground pt-1.5">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" />
                     <span>Sector: {report.area?.name || "Assigned Area"}</span>
                   </div>
 
-                  <div className="flex items-center gap-1.5 font-mono">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span>Submitted: {new Date(report.createdAt).toLocaleString()}</span>
+                  <div className="flex items-center gap-2 font-mono text-xs">
+                    <Clock className="h-4 w-4" />
+                    <span>Submitted: {formatDateTime(report.createdAt)}</span>
                   </div>
                 </div>
               </Card>

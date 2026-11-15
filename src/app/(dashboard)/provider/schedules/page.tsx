@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient } from "@/lib/api-client";
+import { formatDateTime } from "@/lib/utils";
 import type { Outage, ApiResponse } from "@/types";
 
 function ProviderSchedulesContent() {
@@ -253,17 +254,17 @@ function ProviderSchedulesContent() {
                       <td className="px-4 py-3">
                         <Badge
                           variant={o.type === "UNEXPECTED" ? "destructive" : "secondary"}
-                          className="text-[10px] font-mono uppercase"
+                          className="text-xs font-mono uppercase font-semibold px-2 py-0.5"
                         >
                           {o.type}
                         </Badge>
                       </td>
 
-                      <td className="px-4 py-3 text-muted-foreground font-medium">
+                      <td className="px-5 py-4 text-foreground font-semibold text-sm">
                         {o.area?.name || "Grid Sector"}
                       </td>
 
-                      <td className="px-4 py-3 font-mono text-[11px] text-muted-foreground">
+                      <td className="px-5 py-4 font-mono text-xs text-muted-foreground">
                         <div>Start: {new Date(o.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
                         {o.endTime && (
                           <div>End: {new Date(o.endTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
