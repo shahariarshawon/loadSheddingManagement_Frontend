@@ -85,7 +85,7 @@ function AuditLogsContent() {
       };
       if (search) q.search = search;
       if (entity) q.entity = entity;
-      return apiClient.get<AuditLog[]>("/api/v1/admin/audit-logs", q);
+      return apiClient.get<AuditLog[]>("/admin/audit-logs", q);
     },
   });
 

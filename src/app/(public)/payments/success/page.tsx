@@ -29,7 +29,7 @@ function PaymentSuccessContent() {
   // Query verified status from backend
   const { data, isLoading, isError, error } = useQuery<ApiResponse<Payment>>({
     queryKey: ["payment-status", sessionId],
-    queryFn: () => apiClient.get<Payment>(`/api/v1/payments/status/${sessionId}`),
+    queryFn: () => apiClient.get<Payment>(`/payments/status/${sessionId}`),
     enabled: Boolean(sessionId),
     refetchInterval: (query) => {
       // If status is still pending (awaiting webhook), poll every 2 seconds up to 5 times

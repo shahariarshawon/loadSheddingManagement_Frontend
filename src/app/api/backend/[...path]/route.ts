@@ -13,7 +13,10 @@ type RouteParams = {
 async function handleProxy(request: Request, { params }: RouteParams) {
   try {
     const { path } = await params;
-    const pathStr = path.join("/");
+    let pathStr = path.join("/");
+    // Normalize path: if incoming path begins with "api/v1" or "api/v1/", strip it
+    // because env.backendApiUrl already ends with "/api/v1"
+    pathStr = pathStr.replace(/^api\/v1\/?/, "");
     const url = new URL(request.url);
     const search = url.search;
     const targetUrl = `${env.backendApiUrl}/${pathStr}${search}`;

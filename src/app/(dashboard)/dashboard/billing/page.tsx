@@ -45,7 +45,7 @@ export default function CustomerBillingPage() {
     refetch: refetchPayments,
   } = useQuery<ApiResponse<Payment[]>>({
     queryKey: ["customer-payments", page],
-    queryFn: () => apiClient.get<Payment[]>("/api/v1/payments/my", { page, limit: 5 }),
+    queryFn: () => apiClient.get<Payment[]>("/payments/my", { page, limit: 5 }),
   });
 
   const payments = paymentsRes?.data || [];
@@ -62,7 +62,7 @@ export default function CustomerBillingPage() {
   const checkoutMutation = useMutation({
     mutationFn: async (plan: "MONTHLY_PRIORITY" | "ANNUAL_PRIORITY") => {
       setInitiatingPlan(plan);
-      return apiClient.post<ApiResponse<CheckoutResponse>>("/api/v1/payments/checkout", {
+      return apiClient.post<ApiResponse<CheckoutResponse>>("/payments/checkout", {
         plan,
       });
     },

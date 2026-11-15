@@ -87,7 +87,7 @@ function AdminPaymentsContent() {
       };
       if (search) q.search = search;
       if (status) q.status = status;
-      return apiClient.get<Payment[]>("/api/v1/payments", q);
+      return apiClient.get<Payment[]>("/payments", q);
     },
   });
 

@@ -102,7 +102,7 @@ export default function MultiStepScheduleWizardPage() {
   // 1. Fetch available zones
   const { data: zonesRes } = useQuery<ApiResponse<Zone[]>>({
     queryKey: ["zones"],
-    queryFn: () => apiClient.get<Zone[]>("/api/v1/zones"),
+    queryFn: () => apiClient.get<Zone[]>("/zones"),
     staleTime: 60 * 1000,
   });
   const zones = zonesRes?.data || [];
@@ -110,7 +110,7 @@ export default function MultiStepScheduleWizardPage() {
   // 2. Fetch available areas
   const { data: areasRes, isLoading: loadingAreas } = useQuery<ApiResponse<Area[]>>({
     queryKey: ["areas"],
-    queryFn: () => apiClient.get<Area[]>("/api/v1/areas?limit=50"),
+    queryFn: () => apiClient.get<Area[]>("/areas?limit=50"),
     staleTime: 60 * 1000,
   });
   const allAreas = areasRes?.data || [];
@@ -201,7 +201,7 @@ export default function MultiStepScheduleWizardPage() {
   // Final submission mutation
   const submitMutation = useMutation({
     mutationFn: (data: FullScheduleFormData) =>
-      apiClient.post<ApiResponse<Outage>>("/api/v1/outages", {
+      apiClient.post<Outage>("/outages", {
         title: data.title,
         areaId: data.areaId,
         type: data.type,
@@ -211,7 +211,7 @@ export default function MultiStepScheduleWizardPage() {
         description: data.description || undefined,
       }),
     onSuccess: (res) => {
-      const outageNumber = res?.data?.data?.outageNumber || "Outage";
+      const outageNumber = res?.data?.outageNumber || "Outage";
       toast.success("Schedule Successfully Dispatched!", {
         description: `Reference #${outageNumber} has been logged and published.`,
       });

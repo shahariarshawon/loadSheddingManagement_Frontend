@@ -32,8 +32,9 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
-  // Normalize endpoint to start with /
-  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  // Normalize endpoint: strip any leading /api/v1 or api/v1 to prevent duplicate route prefix
+  const stripped = endpoint.replace(/^\/?(api\/v1)?\/?/, "/");
+  const cleanEndpoint = stripped.startsWith("/") ? stripped : `/${stripped}`;
   const url = `/api/backend${cleanEndpoint}`;
 
   const defaultHeaders: Record<string, string> = {

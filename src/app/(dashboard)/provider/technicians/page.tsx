@@ -78,7 +78,7 @@ function TechniciansRosterContent() {
   // 1. Fetch available zones for filter dropdown
   const { data: zonesData } = useQuery<ApiResponse<Zone[]>>({
     queryKey: ["zones"],
-    queryFn: () => apiClient.get<Zone[]>("/api/v1/zones"),
+    queryFn: () => apiClient.get<Zone[]>("/zones"),
     staleTime: 60 * 1000,
   });
 
@@ -96,7 +96,7 @@ function TechniciansRosterContent() {
       if (isAvailableParam) q.isAvailable = isAvailableParam;
       if (zoneIdParam) q.zoneId = zoneIdParam;
 
-      return apiClient.get<Technician[]>("/api/v1/technicians", q);
+      return apiClient.get<Technician[]>("/technicians", q);
     },
   });
 
@@ -104,7 +104,7 @@ function TechniciansRosterContent() {
   const toggleMutation = useMutation({
     mutationFn: async ({ id, newStatus }: { id: string; newStatus: boolean }) => {
       setTogglingId(id);
-      return apiClient.patch<Technician>(`/api/v1/technicians/${id}`, {
+      return apiClient.patch<Technician>(`/technicians/${id}`, {
         isAvailable: newStatus,
       });
     },

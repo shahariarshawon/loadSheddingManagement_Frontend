@@ -16,7 +16,7 @@ export default function CustomerAnalyticsPage() {
   // Query outages for user's area to show real stats
   const { data, isLoading } = useQuery<ApiResponse<Outage[]>>({
     queryKey: ["customer-analytics-outages", areaId],
-    queryFn: () => apiClient.get<Outage[]>(`/api/v1/outages${areaId ? `?areaId=${areaId}` : ""}`),
+    queryFn: () => apiClient.get<Outage[]>(`/outages${areaId ? `?areaId=${areaId}` : ""}`),
   });
 
   const outages = data?.data || [];
