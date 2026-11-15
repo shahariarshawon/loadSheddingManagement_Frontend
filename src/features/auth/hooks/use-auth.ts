@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authService } from "@/features/auth/services/auth-service";
 import { ROUTES } from "@/lib/constants";
@@ -13,7 +12,6 @@ export const AUTH_QUERY_KEY = ["auth", "session"] as const;
 
 export function useAuth() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   // Active Session Query
   const {
@@ -45,7 +43,7 @@ export function useAuth() {
         description: `Welcome back, ${data.data?.user.name}!`,
       });
       if (data.data?.redirectTo) {
-        router.push(data.data.redirectTo);
+        window.location.href = data.data.redirectTo;
       }
     },
     onError: (error: Error) => {
@@ -68,7 +66,7 @@ export function useAuth() {
         description: data.message || `Signed in as ${data.data?.user.role}.`,
       });
       if (data.data?.redirectTo) {
-        router.push(data.data.redirectTo);
+        window.location.href = data.data.redirectTo;
       }
     },
     onError: (error: Error) => {
@@ -91,9 +89,9 @@ export function useAuth() {
         description: "Welcome to GridWatch.",
       });
       if (data.data?.redirectTo) {
-        router.push(data.data.redirectTo);
+        window.location.href = data.data.redirectTo;
       } else {
-        router.push(ROUTES.DASHBOARD);
+        window.location.href = ROUTES.DASHBOARD;
       }
     },
     onError: (error: Error) => {
@@ -115,7 +113,7 @@ export function useAuth() {
       toast.success("Logged out successfully", {
         description: "Your session has ended securely.",
       });
-      router.push(ROUTES.LOGIN);
+      window.location.href = ROUTES.LOGIN;
     },
     onError: () => {
       // Still reset client state on failure
@@ -124,7 +122,7 @@ export function useAuth() {
         user: null,
       });
       queryClient.clear();
-      router.push(ROUTES.LOGIN);
+      window.location.href = ROUTES.LOGIN;
     },
   });
 
