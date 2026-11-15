@@ -80,6 +80,8 @@ function MyReportsContent() {
     router.push(pathname);
   };
 
+  const queryKey = ["outage-reports", "my", page, limit, search, status];
+
   // Fetch customer's personal reports via BFF
   const {
     data: reportsResponse,
@@ -87,7 +89,7 @@ function MyReportsContent() {
     isFetching,
     isError,
   } = useQuery<ApiResponse<OutageReport[]>>({
-    queryKey: ["outage-reports", "my", page, limit, search, status],
+    queryKey,
     queryFn: () =>
       apiClient.get<OutageReport[]>("/outage-reports/my", {
         page,
@@ -97,18 +99,38 @@ function MyReportsContent() {
       }),
   });
 
-  // Withdraw report mutation
+  // Withdraw report mutation with Optimistic UI updates
   const withdrawMutation = useMutation({
     mutationFn: (id: string) => apiClient.delete(`/outage-reports/${id}`),
+    onMutate: async (id: string) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previousData = queryClient.getQueryData<ApiResponse<OutageReport[]>>(queryKey);
+
+      if (previousData?.data) {
+        queryClient.setQueryData<ApiResponse<OutageReport[]>>(queryKey, {
+          ...previousData,
+          data: previousData.data.filter((r) => r.id !== id),
+        });
+      }
+
+      setDeleteReportId(null);
+      return { previousData };
+    },
+    onError: (err: Error, _id, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
+      toast.error("Withdrawal Failed", {
+        description: err.message || "Could not withdraw report. Reverted.",
+      });
+    },
     onSuccess: () => {
       toast.success("Report Withdrawn", {
         description: "Your incident report has been deleted.",
       });
-      queryClient.invalidateQueries({ queryKey: ["outage-reports", "my"] });
-      setDeleteReportId(null);
     },
-    onError: (err: Error) => {
-      toast.error("Withdrawal Failed", { description: err.message });
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["outage-reports", "my"] });
     },
   });
 

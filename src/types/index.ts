@@ -64,6 +64,7 @@ export interface Area {
   postalCode?: string | null;
   feederId: string;
   feeder?: Feeder;
+  substation?: Substation;
   userCount?: number;
   outageCount?: number;
   createdAt?: string;
@@ -215,6 +216,48 @@ export interface AuditLog {
 // ============================================================================
 // Navigation & Layout Types
 // ============================================================================
+
+export interface Subscription {
+  id: string;
+  userId: string;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  startDate: string;
+  endDate: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Payment {
+  id: string;
+  stripeSessionId: string;
+  stripePaymentIntentId?: string | null;
+  userId: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  subscriptionId?: string | null;
+  subscription?: Subscription | null;
+  amount: number | string;
+  currency: string;
+  status: PaymentStatus;
+  metadata?: Record<string, unknown> | null;
+  paidAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CheckoutResponse {
+  paymentId: string;
+  checkoutUrl: string;
+  url: string;
+  sessionId: string;
+  amount: number;
+  currency: string;
+  plan: SubscriptionPlan;
+}
 
 export interface NavItem {
   title: string;

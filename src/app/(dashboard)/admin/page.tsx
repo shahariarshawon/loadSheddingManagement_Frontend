@@ -1,25 +1,36 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import {
-  ShieldAlert,
   Users,
   Radio,
-  Zap,
   Layers,
   Wrench,
-  CheckCircle2,
   ArrowRight,
-  TrendingUp,
-  AlertTriangle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { AdminAnalyticsCharts } from "@/components/dashboard/admin-analytics-charts";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getServerSession } from "@/lib/auth-server";
 import { env } from "@/lib/env";
 import { ROUTES } from "@/lib/constants";
 import type { AdminStats, ApiResponse } from "@/types";
+
+const DynamicAdminAnalyticsCharts = dynamic(
+  () =>
+    import("@/components/dashboard/admin-analytics-charts").then(
+      (mod) => mod.AdminAnalyticsCharts
+    ),
+  {
+    loading: () => (
+      <div className="grid gap-4 md:grid-cols-2">
+        <Skeleton className="h-80 w-full rounded-xl" />
+        <Skeleton className="h-80 w-full rounded-xl" />
+      </div>
+    ),
+  }
+);
 
 export const metadata: Metadata = {
   title: "Admin Control Center",
@@ -163,8 +174,8 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-      {/* Real-Data Analytics Visualizations */}
-      {stats && <AdminAnalyticsCharts stats={stats} />}
+      {/* Real-Data Analytics Visualizations (Dynamically Imported) */}
+      {stats && <DynamicAdminAnalyticsCharts stats={stats} />}
 
       {/* Management Modules Quick Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

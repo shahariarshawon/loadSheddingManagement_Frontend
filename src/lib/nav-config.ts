@@ -43,7 +43,6 @@ export const ADMIN_NAV_ITEMS: NavItem[] = [
     title: "Financial Audit",
     href: ROUTES.ADMIN_PAYMENTS,
     icon: CreditCard,
-    badge: "Phase 4",
   },
 ];
 
@@ -107,6 +106,5 @@ export const CUSTOMER_NAV_ITEMS: NavItem[] = [
     title: "Billing & Passes",
     href: ROUTES.CUSTOMER_BILLING,
     icon: CreditCard,
-    badge: "Phase 4",
   },
 ];

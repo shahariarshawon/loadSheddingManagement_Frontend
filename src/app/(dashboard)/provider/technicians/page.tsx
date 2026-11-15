@@ -82,9 +82,11 @@ function TechniciansRosterContent() {
     staleTime: 60 * 1000,
   });
 
+  const queryKey = ["technicians", { page, search, isAvailableParam, zoneIdParam }];
+
   // 2. Fetch technicians with query params
   const { data, isLoading, isError, error } = useQuery<ApiResponse<Technician[]>>({
-    queryKey: ["technicians", { page, search, isAvailableParam, zoneIdParam }],
+    queryKey,
     queryFn: () => {
       const q: Record<string, string | number> = {
         page,
@@ -98,7 +100,7 @@ function TechniciansRosterContent() {
     },
   });
 
-  // 3. Mutation to toggle availability
+  // 3. Mutation to toggle availability with Optimistic UI updates
   const toggleMutation = useMutation({
     mutationFn: async ({ id, newStatus }: { id: string; newStatus: boolean }) => {
       setTogglingId(id);
@@ -106,18 +108,47 @@ function TechniciansRosterContent() {
         isAvailable: newStatus,
       });
     },
-    onSuccess: (res, variables) => {
+    onMutate: async ({ id, newStatus }) => {
+      // 1. Cancel ongoing queries for technicians to prevent overwrites
+      await queryClient.cancelQueries({ queryKey });
+
+      // 2. Snapshot the previous cached data
+      const previousData = queryClient.getQueryData<ApiResponse<Technician[]>>(queryKey);
+
+      // 3. Optimistically update TanStack Query cache immediately
+      if (previousData?.data) {
+        queryClient.setQueryData<ApiResponse<Technician[]>>(queryKey, {
+          ...previousData,
+          data: previousData.data.map((tech) =>
+            tech.id === id ? { ...tech, isAvailable: newStatus } : tech
+          ),
+        });
+      }
+
+      // Return context with previous snapshot for rollback on failure
+      return { previousData };
+    },
+    onError: (err: Error, _variables, context) => {
+      setTogglingId(null);
+      // Roll back to previous snapshot
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
+      }
+      toast.error("Status Update Failed", {
+        description: err.message || "Failed to update technician availability. Reverted changes.",
+      });
+    },
+    onSuccess: (_res, variables) => {
       setTogglingId(null);
       toast.success(
         variables.newStatus
           ? "Technician status set to Available for dispatch"
           : "Technician marked as Busy / Dispatched"
       );
-      queryClient.invalidateQueries({ queryKey: ["technicians"] });
     },
-    onError: (err: Error) => {
-      setTogglingId(null);
-      toast.error(err.message || "Failed to update technician availability");
+    onSettled: () => {
+      // Re-sync with backend truth
+      queryClient.invalidateQueries({ queryKey: ["technicians"] });
     },
   });
 
