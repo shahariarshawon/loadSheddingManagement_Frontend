@@ -9,11 +9,15 @@ export async function POST() {
     // If a refresh token is present, notify backend to revoke it permanently in PostgreSQL
     if (refreshToken) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
         await fetch(`${env.backendApiUrl}/auth/logout`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ refreshToken }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
       } catch (backendError) {
         console.warn("Backend logout request error (safely continuing):", backendError);
       }
