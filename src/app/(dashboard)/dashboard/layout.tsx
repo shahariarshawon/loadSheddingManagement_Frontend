@@ -2,7 +2,6 @@ import type React from "react";
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/auth-server";
 import { DashboardShell } from "@/components/layouts/dashboard-shell";
-import { CUSTOMER_NAV_ITEMS } from "@/lib/nav-config";
 import { ROUTES } from "@/lib/constants";
 
 export default async function ConsumerLayout({
@@ -29,7 +28,6 @@ export default async function ConsumerLayout({
 
   return (
     <DashboardShell
-      navItems={CUSTOMER_NAV_ITEMS}
       roleTitle="Residential Consumer Portal"
       roleBadge="CONSUMER"
       breadcrumbs={[{ label: "Consumer Portal", href: ROUTES.DASHBOARD }]}

@@ -4,6 +4,11 @@ import type React from "react";
 import { Sidebar } from "./sidebar";
 import { MobileSidebar } from "./mobile-sidebar";
 import { DashboardHeader } from "./dashboard-header";
+import {
+  ADMIN_NAV_ITEMS,
+  PROVIDER_NAV_ITEMS,
+  CUSTOMER_NAV_ITEMS,
+} from "@/lib/nav-config";
 import type { NavItem, UserRole } from "@/types";
 
 interface BreadcrumbItem {
@@ -13,7 +18,7 @@ interface BreadcrumbItem {
 
 interface DashboardShellProps {
   children: React.ReactNode;
-  navItems: NavItem[];
+  navItems?: NavItem[];
   roleTitle?: string;
   roleBadge?: string;
   breadcrumbs?: BreadcrumbItem[];
@@ -24,7 +29,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({
   children,
-  navItems,
+  navItems: propNavItems,
   roleTitle = "Portal Dashboard",
   roleBadge,
   breadcrumbs,
@@ -32,18 +37,28 @@ export function DashboardShell({
   userName,
   userEmail,
 }: DashboardShellProps) {
+  // Resolve nav items inside the Client Component so React Component / Icon functions
+  // NEVER cross the React Server Component -> Client Component serialization boundary.
+  const resolvedNavItems =
+    propNavItems ||
+    (userRole === "ADMIN"
+      ? ADMIN_NAV_ITEMS
+      : userRole === "POWER_OPERATOR"
+      ? PROVIDER_NAV_ITEMS
+      : CUSTOMER_NAV_ITEMS);
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop Collapsible Sidebar */}
       <Sidebar
-        items={navItems}
+        items={resolvedNavItems}
         roleTitle={roleTitle}
         roleBadge={roleBadge}
       />
 
       {/* Mobile Drawer Sidebar */}
       <MobileSidebar
-        items={navItems}
+        items={resolvedNavItems}
         roleTitle={roleTitle}
         roleBadge={roleBadge}
       />
