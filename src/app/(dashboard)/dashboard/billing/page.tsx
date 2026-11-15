@@ -63,12 +63,18 @@ export default function CustomerBillingPage() {
   const checkoutMutation = useMutation({
     mutationFn: async (plan: "MONTHLY_PRIORITY" | "ANNUAL_PRIORITY") => {
       setInitiatingPlan(plan);
-      return apiClient.post<ApiResponse<CheckoutResponse>>("/payments/checkout", {
+      return apiClient.post<CheckoutResponse>("/payments/checkout", {
         plan,
       });
     },
     onSuccess: (res) => {
-      const checkoutUrl = res?.data?.data?.checkoutUrl || res?.data?.data?.url;
+      const data = res?.data as CheckoutResponse | undefined;
+      const checkoutUrl =
+        data?.checkoutUrl ||
+        data?.url ||
+        (data as unknown as { data?: { checkoutUrl?: string; url?: string } })?.data?.checkoutUrl ||
+        (data as unknown as { data?: { checkoutUrl?: string; url?: string } })?.data?.url;
+
       if (checkoutUrl) {
         toast.success("Redirecting to Stripe Test Sandbox...", {
           description: "Secure 256-bit encrypted checkout session initialized.",
