@@ -123,12 +123,12 @@ export async function getServerSession(): Promise<ServerSessionResult> {
             (decoded.role === "ADMIN"
               ? "System Administrator"
               : decoded.role === "POWER_OPERATOR"
-              ? "Grid Dispatch Operator"
-              : "Residential Consumer"),
+              ? "Chief Grid Operator"
+              : "Tariq Rahman"),
           email: decoded.email || `${decoded.role.toLowerCase()}@gridwatch.com`,
           role: decoded.role,
           isActive: true,
-          areaId: decoded.role === "CUSTOMER" ? "a1aa1c30-3026-42a4-bbcc-5dfda44f1b77" : null,
+          areaId: decoded.role === "CUSTOMER" ? "area-gulshan-2-c" : null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };

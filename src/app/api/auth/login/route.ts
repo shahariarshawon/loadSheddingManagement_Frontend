@@ -101,13 +101,13 @@ export async function POST(request: Request) {
         const id = isAdminMatch
           ? "b8aa1c30-3026-42a4-bbcc-5dfda44f1b74"
           : isOperatorMatch
-          ? "c1aa1c30-3026-42a4-bbcc-5dfda44f1b75"
-          : "d2aa1c30-3026-42a4-bbcc-5dfda44f1b76";
+          ? "2a0d3bc6-3a32-4763-b129-2c9c5b7aabd9"
+          : "0c7ec917-3d6e-4408-9aaf-1dd37ff0c41e";
         const name = isAdminMatch
           ? "System Administrator"
           : isOperatorMatch
-          ? "Grid Dispatch Operator"
-          : "Residential Consumer";
+          ? "Chief Grid Operator"
+          : "Tariq Rahman";
 
         user = {
           id,
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
           email,
           role,
           isActive: true,
-          areaId: role === "CUSTOMER" ? "a1aa1c30-3026-42a4-bbcc-5dfda44f1b77" : null,
+          areaId: role === "CUSTOMER" ? "area-gulshan-2-c" : null,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
