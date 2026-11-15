@@ -3,6 +3,12 @@
  */
 
 export const env = {
+  // Server-side backend API URL
+  backendApiUrl:
+    process.env.BACKEND_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://loadsheddingmanagement-backend.onrender.com/api/v1",
+
   // Backend API URL (Client & Server accessible)
   apiUrl:
     process.env.NEXT_PUBLIC_API_URL ||

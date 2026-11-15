@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Zap, Menu, Radio } from "lucide-react";
+import { Zap, Menu, Radio, LayoutDashboard } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { UserMenuPlaceholder } from "@/components/layouts/user-menu-placeholder";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { APP_CONFIG, ROUTES } from "@/lib/constants";
 import { useUiStore } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
@@ -21,6 +23,14 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname();
   const { mobileMenuOpen, setMobileMenuOpen } = useUiStore();
+  const { isAuthenticated, role, user } = useAuth();
+
+  let dashboardHref: string = ROUTES.DASHBOARD;
+  if (role === "ADMIN") {
+    dashboardHref = ROUTES.ADMIN;
+  } else if (role === "POWER_OPERATOR") {
+    dashboardHref = ROUTES.PROVIDER;
+  }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/80 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
@@ -73,19 +83,34 @@ export function Navbar() {
 
           <div className="h-4 w-[1px] bg-border" />
 
-          <Link
-            href={ROUTES.LOGIN}
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "font-medium text-sm")}
-          >
-            Log In
-          </Link>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2.5">
+              <Link
+                href={dashboardHref}
+                className={cn(buttonVariants({ size: "sm" }), "font-medium text-xs shadow-xs gap-1.5")}
+              >
+                <LayoutDashboard className="h-3.5 w-3.5" />
+                <span>Dashboard</span>
+              </Link>
+              <UserMenuPlaceholder name={user?.name} email={user?.email} role={role || undefined} />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                href={ROUTES.LOGIN}
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "font-medium text-sm")}
+              >
+                Log In
+              </Link>
 
-          <Link
-            href={ROUTES.REGISTER}
-            className={cn(buttonVariants({ size: "sm" }), "font-medium text-sm shadow-sm")}
-          >
-            Get Started
-          </Link>
+              <Link
+                href={ROUTES.REGISTER}
+                className={cn(buttonVariants({ size: "sm" }), "font-medium text-sm shadow-sm")}
+              >
+                Get Started
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Mobile Menu Trigger */}
@@ -139,20 +164,33 @@ export function Navbar() {
               </div>
 
               <div className="pt-6 border-t flex flex-col gap-2">
-                <Link
-                  href={ROUTES.LOGIN}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(buttonVariants({ variant: "outline" }), "w-full justify-center")}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href={ROUTES.REGISTER}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={cn(buttonVariants({ variant: "default" }), "w-full justify-center")}
-                >
-                  Create Citizen Account
-                </Link>
+                {isAuthenticated ? (
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(buttonVariants({ variant: "default" }), "w-full justify-center gap-1.5")}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Open Dashboard</span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href={ROUTES.LOGIN}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(buttonVariants({ variant: "outline" }), "w-full justify-center")}
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href={ROUTES.REGISTER}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={cn(buttonVariants({ variant: "default" }), "w-full justify-center")}
+                    >
+                      Create Customer Account
+                    </Link>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>

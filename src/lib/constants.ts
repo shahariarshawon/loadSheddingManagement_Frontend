@@ -25,28 +25,32 @@ export const ROUTES = {
   // Auth Routes
   LOGIN: "/login",
   REGISTER: "/register",
+  UNAUTHORIZED: "/unauthorized",
 
-  // Customer Dashboard Routes
-  CUSTOMER_DASHBOARD: "/dashboard/customer",
-  CUSTOMER_REPORTS: "/dashboard/customer/reports",
-  CUSTOMER_NEW_REPORT: "/dashboard/customer/reports/new",
-  CUSTOMER_ANALYTICS: "/dashboard/customer/analytics",
-  CUSTOMER_BILLING: "/dashboard/customer/billing",
-  CUSTOMER_PROFILE: "/dashboard/customer/profile",
+  // Role-Based Dashboards (Phase 2 primary routes)
+  ADMIN: "/admin",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_GRID: "/admin/grid",
+  ADMIN_PAYMENTS: "/admin/payments",
+  ADMIN_AUDIT_LOGS: "/admin/audit-logs",
 
-  // Power Operator Dashboard Routes
-  OPERATOR_DASHBOARD: "/dashboard/operator",
-  OPERATOR_SCHEDULES: "/dashboard/operator/schedules",
-  OPERATOR_NEW_SCHEDULE: "/dashboard/operator/schedules/new",
-  OPERATOR_REPORTS: "/dashboard/operator/reports",
-  OPERATOR_TECHNICIANS: "/dashboard/operator/technicians",
+  DASHBOARD: "/dashboard",
+  CUSTOMER_REPORTS: "/dashboard/reports",
+  CUSTOMER_NEW_REPORT: "/dashboard/reports/new",
+  CUSTOMER_ANALYTICS: "/dashboard/analytics",
+  CUSTOMER_BILLING: "/dashboard/billing",
+  CUSTOMER_PROFILE: "/dashboard/profile",
 
-  // Admin Dashboard Routes
-  ADMIN_DASHBOARD: "/dashboard/admin",
-  ADMIN_USERS: "/dashboard/admin/users",
-  ADMIN_GRID: "/dashboard/admin/grid",
-  ADMIN_PAYMENTS: "/dashboard/admin/payments",
-  ADMIN_AUDIT_LOGS: "/dashboard/admin/audit-logs",
+  PROVIDER: "/provider",
+  PROVIDER_SCHEDULES: "/provider/schedules",
+  PROVIDER_NEW_SCHEDULE: "/provider/schedules/new",
+  PROVIDER_REPORTS: "/provider/reports",
+  PROVIDER_TECHNICIANS: "/provider/technicians",
+
+  // Aliases for backwards compatibility with Phase 1 references
+  CUSTOMER_DASHBOARD: "/dashboard",
+  OPERATOR_DASHBOARD: "/provider",
+  ADMIN_DASHBOARD: "/admin",
 
   // Payment Redirect Routes
   PAYMENT_SUCCESS: "/payments/success",
@@ -61,15 +65,29 @@ export const DEMO_CREDENTIALS = {
     email: "admin@gridwatch.com",
     role: "ADMIN" as const,
     label: "Administrator",
+    description: "System governance, user roles, grid topology & financial records",
+  },
+  PROVIDER: {
+    email: "operator@gridwatch.com",
+    role: "POWER_OPERATOR" as const,
+    label: "Electricity Provider / Operator",
+    description: "Load-shedding coordination, dispatch triage & technician rosters",
   },
   OPERATOR: {
     email: "operator@gridwatch.com",
     role: "POWER_OPERATOR" as const,
     label: "Power Operator",
+    description: "Load-shedding coordination, dispatch triage & technician rosters",
   },
   CUSTOMER: {
     email: "customer@gridwatch.com",
     role: "CUSTOMER" as const,
-    label: "Residential Customer",
+    label: "User / Consumer",
+    description: "Outage schedules, personal incident reports & reliability analytics",
   },
+} as const;
+
+export const COOKIE_KEYS = {
+  ACCESS_TOKEN: "gw_access_token",
+  REFRESH_TOKEN: "gw_refresh_token",
 } as const;
