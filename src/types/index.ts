@@ -195,6 +195,23 @@ export interface InAppNotification {
   createdAt: string;
 }
 
+export interface AuditLog {
+  id: string;
+  userId?: string | null;
+  action: string;
+  entity: string;
+  entityId?: string | null;
+  details?: Record<string, unknown> | null;
+  ipAddress?: string | null;
+  createdAt: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+  } | null;
+}
+
 // ============================================================================
 // Navigation & Layout Types
 // ============================================================================
@@ -206,4 +223,43 @@ export interface NavItem {
   badge?: string | number;
   description?: string;
   exact?: boolean;
+}
+
+export interface AdminStats {
+  users: {
+    total: number;
+    customers: number;
+    operators: number;
+    admins: number;
+    active: number;
+  };
+  network: {
+    zones: number;
+    substations: number;
+    feeders: number;
+    areas: number;
+  };
+  outages: {
+    total: number;
+    active: number;
+    planned: number;
+    unexpected: number;
+    restored: number;
+  };
+  reports: {
+    total: number;
+    pending: number;
+    verified: number;
+  };
+  technicians: {
+    total: number;
+    available: number;
+    busy: number;
+  };
+  finance: {
+    totalPayments: number;
+    successfulPayments: number;
+    totalRevenueUsd: number;
+    activeSubscribers: number;
+  };
 }

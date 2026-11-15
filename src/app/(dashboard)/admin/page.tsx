@@ -1,25 +1,54 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ShieldAlert,
-  Server,
-  KeyRound,
-  CheckCircle2,
-  Clock,
+  Users,
+  Radio,
+  Zap,
   Layers,
+  Wrench,
+  CheckCircle2,
   ArrowRight,
+  TrendingUp,
+  AlertTriangle,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { AdminAnalyticsCharts } from "@/components/dashboard/admin-analytics-charts";
 import { getServerSession } from "@/lib/auth-server";
+import { env } from "@/lib/env";
+import { ROUTES } from "@/lib/constants";
+import type { AdminStats, ApiResponse } from "@/types";
 
 export const metadata: Metadata = {
   title: "Admin Control Center",
-  description: "GridWatch platform administration and grid governance portal.",
+  description: "GridWatch platform administration and live grid governance analytics.",
 };
+
+async function getAdminStats(accessToken?: string): Promise<AdminStats | null> {
+  if (!accessToken) return null;
+  try {
+    const res = await fetch(`${env.backendApiUrl}/admin/stats`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data: ApiResponse<AdminStats> = await res.json();
+    return data.data;
+  } catch (error) {
+    console.error("Failed to fetch admin stats:", error);
+    return null;
+  }
+}
 
 export default async function AdminDashboardPage() {
   const session = await getServerSession();
   const admin = session.user;
+  const stats = await getAdminStats(session.accessToken || undefined);
 
   return (
     <div className="space-y-6">
@@ -35,164 +64,146 @@ export default async function AdminDashboardPage() {
             </Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            Welcome back, <strong className="text-foreground">{admin?.name || "Administrator"}</strong>. Grid governance and access telemetry are active.
+            Welcome back, <strong className="text-foreground">{admin?.name || "Administrator"}</strong>. Real-time platform governance and grid telemetry are active.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span>Session Verified</span>
-          </div>
+          <Link href={ROUTES.ADMIN_USERS}>
+            <Button size="sm" variant="outline" className="text-xs h-8 cursor-pointer gap-1.5">
+              <Users className="h-3.5 w-3.5" />
+              <span>Manage Users</span>
+            </Button>
+          </Link>
+          <Link href={ROUTES.ADMIN_GRID}>
+            <Button size="sm" className="text-xs h-8 cursor-pointer gap-1.5 shadow-xs">
+              <Layers className="h-3.5 w-3.5" />
+              <span>Grid Topology</span>
+            </Button>
+          </Link>
         </div>
       </div>
 
-      {/* Authenticated Identity & Security Scope Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Card 1: Verified User Identity */}
-        <Card className="border-purple-500/20 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400">
-              <ShieldAlert className="h-4.5 w-4.5" />
-              <CardTitle className="text-base font-semibold">
-                Verified Administrator Identity
-              </CardTitle>
-            </div>
-            <CardDescription className="text-xs">
-              Live credentials validated by PostgreSQL database
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-0">
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-lg bg-muted/40 border border-border/60">
-                <span className="text-muted-foreground block text-[11px]">Admin Name</span>
-                <span className="font-semibold text-foreground truncate block">
-                  {admin?.name || "N/A"}
-                </span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-muted/40 border border-border/60">
-                <span className="text-muted-foreground block text-[11px]">Primary Email</span>
-                <span className="font-semibold text-foreground truncate block">
-                  {admin?.email || "N/A"}
-                </span>
-              </div>
-              <div className="p-2.5 rounded-lg bg-muted/40 border border-border/60">
-                <span className="text-muted-foreground block text-[11px]">Role Privilege</span>
-                <Badge variant="secondary" className="text-[10px] font-mono mt-0.5">
-                  {admin?.role || "ADMIN"}
-                </Badge>
-              </div>
-              <div className="p-2.5 rounded-lg bg-muted/40 border border-border/60">
-                <span className="text-muted-foreground block text-[11px]">Account Status</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="h-3 w-3" />
-                  {admin?.isActive ? "Active / In Good Standing" : "Suspended"}
-                </span>
+      {/* Live System Stat Cards */}
+      {stats && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Card 1: Users */}
+          <Card className="border-border bg-card/60 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground">Registered Users</span>
+              <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                <Users className="h-4 w-4" />
               </div>
             </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-foreground">{stats.users.total}</span>
+              <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                {stats.users.active} Active
+              </span>
+            </div>
+            <span className="text-[10px] text-muted-foreground block truncate">
+              {stats.users.customers} Citizens • {stats.users.operators} Operators
+            </span>
+          </Card>
 
-            <div className="p-2.5 rounded-lg bg-muted/30 border border-border/40 text-[11px] space-y-1">
-              <div className="flex items-center justify-between text-muted-foreground">
-                <span>Database User ID:</span>
-                <span className="font-mono text-foreground">{admin?.id}</span>
-              </div>
-              <div className="flex items-center justify-between text-muted-foreground">
-                <span>Account Created:</span>
-                <span className="text-foreground">
-                  {admin?.createdAt ? new Date(admin.createdAt).toLocaleDateString() : "Active"}
-                </span>
+          {/* Card 2: Outages */}
+          <Card className="border-border bg-card/60 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground">Grid Outages</span>
+              <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <Radio className="h-4 w-4" />
               </div>
             </div>
-          </CardContent>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-foreground">{stats.outages.total}</span>
+              <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                {stats.outages.active} Live Outages
+              </span>
+            </div>
+            <span className="text-[10px] text-muted-foreground block truncate">
+              {stats.outages.planned} Planned • {stats.outages.unexpected} Unplanned
+            </span>
+          </Card>
+
+          {/* Card 3: Network Nodes */}
+          <Card className="border-border bg-card/60 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground">Network Topology</span>
+              <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                <Layers className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-foreground">{stats.network.areas}</span>
+              <span className="text-[11px] text-muted-foreground">Sectors</span>
+            </div>
+            <span className="text-[10px] text-muted-foreground block truncate">
+              {stats.network.zones} Zones • {stats.network.substations} Substations
+            </span>
+          </Card>
+
+          {/* Card 4: Technicians */}
+          <Card className="border-border bg-card/60 p-4 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-muted-foreground">Field Technicians</span>
+              <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <Wrench className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-foreground">{stats.technicians.total}</span>
+              <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                {stats.technicians.available} Available
+              </span>
+            </div>
+            <span className="text-[10px] text-muted-foreground block truncate">
+              Advisory locked dispatch ready
+            </span>
+          </Card>
+        </div>
+      )}
+
+      {/* Real-Data Analytics Visualizations */}
+      {stats && <AdminAnalyticsCharts stats={stats} />}
+
+      {/* Management Modules Quick Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Card className="border-border bg-card/60 hover:border-primary/40 transition-colors p-5 flex flex-col justify-between space-y-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold text-sm text-foreground">User & Access Management</h3>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Audit registered customers and operators, adjust RBAC privilege tiers (`CUSTOMER`, `POWER_OPERATOR`, `ADMIN`), and manage account suspension.
+            </p>
+          </div>
+          <Link href={ROUTES.ADMIN_USERS}>
+            <Button size="sm" variant="outline" className="w-full text-xs h-8 cursor-pointer justify-between">
+              <span>Open User Management</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
         </Card>
 
-        {/* Card 2: Security & Backend Architecture */}
-        <Card className="border-border bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 text-primary">
-              <Server className="h-4.5 w-4.5" />
-              <CardTitle className="text-base font-semibold">
-                Backend-For-Frontend (BFF) Security
-              </CardTitle>
+        <Card className="border-border bg-card/60 hover:border-primary/40 transition-colors p-5 flex flex-col justify-between space-y-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Layers className="h-4 w-4 text-amber-500" />
+              <h3 className="font-semibold text-sm text-foreground">Grid Topology Architecture</h3>
             </div>
-            <CardDescription className="text-xs">
-              Token isolation and Next.js route protection specifications
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 pt-0">
-            <div className="space-y-2 text-xs">
-              <div className="flex items-start gap-2 p-2 rounded-lg bg-muted/40">
-                <KeyRound className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-semibold block text-foreground">
-                    HTTP-Only Cookie Isolation
-                  </span>
-                  <span className="text-muted-foreground text-[11px]">
-                    Access and refresh JWTs are stored in HTTP-Only, SameSite=Lax cookies, completely inaccessible to browser JavaScript.
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-2 p-2 rounded-lg bg-muted/40">
-                <Layers className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-semibold block text-foreground">
-                    Next.js 16 Proxy + Server Guard
-                  </span>
-                  <span className="text-muted-foreground text-[11px]">
-                    Multi-layer protection: `src/proxy.ts` performs edge boundary validation, while Server Component layouts execute live backend session verification.
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Create and manage distribution corridors across the 4-tier network: Power Zones, Substations, Feeders, and Residential Sectors.
+            </p>
+          </div>
+          <Link href={ROUTES.ADMIN_GRID}>
+            <Button size="sm" variant="outline" className="w-full text-xs h-8 cursor-pointer justify-between">
+              <span>Open Grid Topology</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
         </Card>
       </div>
-
-      {/* Phase 2 Foundation Banner & Phase 3 Roadmap */}
-      <Card className="border-border/80 bg-linear-to-r from-purple-500/5 via-primary/5 to-transparent">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <CardTitle className="text-sm font-semibold">
-                Phase 2 Architecture Established
-              </CardTitle>
-            </div>
-            <Badge variant="outline" className="text-[10px] font-mono">
-              Phase 2 Complete
-            </Badge>
-          </div>
-          <CardDescription className="text-xs">
-            Authentication, authorization, session persistence, and role-based dashboard shells are fully implemented and verified against the live Render backend.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="p-3.5 rounded-lg border border-border/80 bg-background/80 text-xs text-muted-foreground space-y-2">
-            <p className="font-medium text-foreground">
-              Upcoming Phase 3 Modules (Reserved for Next Phase):
-            </p>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
-              <li className="flex items-center gap-1.5">
-                <ArrowRight className="h-3 w-3 text-primary" />
-                <span>Administrative User & Role Management (/admin/users)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <ArrowRight className="h-3 w-3 text-primary" />
-                <span>4-Tier Electrical Grid Topology Manager (/admin/grid)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <ArrowRight className="h-3 w-3 text-primary" />
-                <span>Financial Transactions & Stripe Pass Audit (/admin/payments)</span>
-              </li>
-              <li className="flex items-center gap-1.5">
-                <ArrowRight className="h-3 w-3 text-primary" />
-                <span>Immutable System Audit Trail Explorer (/admin/audit-logs)</span>
-              </li>
-            </ul>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
