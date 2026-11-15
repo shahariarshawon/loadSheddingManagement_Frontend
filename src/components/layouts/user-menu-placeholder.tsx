@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -93,14 +94,16 @@ export function UserMenuPlaceholder({
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer text-xs">
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile & Area Info</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer text-xs">
-          <ShieldCheck className="mr-2 h-4 w-4" />
-          <span>Security & Sessions</span>
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuItem className="cursor-pointer text-xs">
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile & Area Info</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="cursor-pointer text-xs">
+            <ShieldCheck className="mr-2 h-4 w-4" />
+            <span>Security & Sessions</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="cursor-pointer text-xs text-destructive focus:text-destructive font-medium"

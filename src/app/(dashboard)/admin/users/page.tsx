@@ -28,6 +28,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -335,32 +336,34 @@ function UsersManagementContent() {
                           <DropdownMenuContent align="end" className="text-xs w-44">
                             <DropdownMenuLabel>Manage Access</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              onClick={() => {
-                                setRoleModalUser(u);
-                                setSelectedRole(u.role);
-                              }}
-                            >
-                              <Shield className="h-3.5 w-3.5 mr-2 text-primary" />
-                              <span>Change Role</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="cursor-pointer text-destructive focus:text-destructive"
-                              onClick={() => setStatusModalUser(u)}
-                            >
-                              {u.isActive ? (
-                                <>
-                                  <UserX className="h-3.5 w-3.5 mr-2" />
-                                  <span>Suspend Account</span>
-                                </>
-                              ) : (
-                                <>
-                                  <UserCheck className="h-3.5 w-3.5 mr-2" />
-                                  <span>Reactivate Account</span>
-                                </>
-                              )}
-                            </DropdownMenuItem>
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  setRoleModalUser(u);
+                                  setSelectedRole(u.role);
+                                }}
+                              >
+                                <Shield className="h-3.5 w-3.5 mr-2 text-primary" />
+                                <span>Change Role</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer text-destructive focus:text-destructive"
+                                onClick={() => setStatusModalUser(u)}
+                              >
+                                {u.isActive ? (
+                                  <>
+                                    <UserX className="h-3.5 w-3.5 mr-2" />
+                                    <span>Suspend Account</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <UserCheck className="h-3.5 w-3.5 mr-2" />
+                                    <span>Reactivate Account</span>
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </td>
