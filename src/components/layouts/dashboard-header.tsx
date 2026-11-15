@@ -42,21 +42,21 @@ export function DashboardHeader({
         </Button>
 
         {/* Breadcrumbs Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center space-x-1.5 text-xs text-muted-foreground">
+        <nav aria-label="Breadcrumb" className="flex items-center space-x-1.5 text-xs text-muted-foreground overflow-hidden">
           {breadcrumbs.map((crumb, idx) => {
             const isLast = idx === breadcrumbs.length - 1;
             return (
-              <div key={crumb.label} className="flex items-center gap-1.5">
-                {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" />}
+              <div key={crumb.label} className="flex items-center gap-1.5 truncate">
+                {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0" />}
                 {crumb.href && !isLast ? (
                   <Link
                     href={crumb.href}
-                    className="hover:text-foreground transition-colors font-medium"
+                    className="hover:text-foreground transition-colors font-medium truncate"
                   >
                     {crumb.label}
                   </Link>
                 ) : (
-                  <span className={isLast ? "font-semibold text-foreground" : "font-medium"}>
+                  <span className={`truncate ${isLast ? "font-semibold text-foreground" : "font-medium"}`}>
                     {crumb.label}
                   </span>
                 )}
